@@ -753,7 +753,7 @@ public class GenerateMatriculaPdf {
         sb.append("  var next = (__uiMode==='child') ? 'main' : 'child';\n");
         sb.append("  setUiMode.call(this,next);\n");
         sb.append("}\n");
-        sb.append("function setPreview(on){ __preview=on; var r=f.call(this,'ResumenAcademico'); if(r){ r.display = on ? display.visible : display.noView; }\n");
+        sb.append("function setPreview(on){ __preview=on; var r=f.call(this,'ResumenAcademico'); if(r){ r.display = on ? display.visible : display.hidden; }\n");
         sb.append("  var ui = ['uiModeLabel','btnValidate','lblEstudios','lblCurso','lblGrado','lblPrograma','lblItinerario','lblMatriculaCompleta','lblDoble','lblTr1','lblTr2','lblTr3','lblC1','lblC2','lblC3'];\n");
         sb.append("  for(var i=1;i<=11;i++){ ui.push('lblOpt'+i); }\n");
         sb.append("  for(var i2=0;i2<ui.length;i2++){ var lf=f.call(this,ui[i2]); if(lf) lf.display = on ? display.hidden : display.noPrint; }\n");

@@ -105,6 +105,19 @@ class GenerateMatriculaPdfTest {
     }
 
     @Test
+    void previewSummaryUsesHiddenDisplayOutsidePreviewMode() throws Exception {
+        String js = buildJavaScript();
+        assertTrue(
+                js.contains("function setPreview(on){ __preview=on; var r=f.call(this,'ResumenAcademico'); if(r){ r.display = on ? display.visible : display.hidden; }"),
+                "Preview summary should be fully hidden in edit mode so it does not intercept page-2 clicks"
+        );
+        assertFalse(
+                js.contains("function setPreview(on){ __preview=on; var r=f.call(this,'ResumenAcademico'); if(r){ r.display = on ? display.visible : display.noView; }"),
+                "Preview summary should not remain in noView mode outside preview"
+        );
+    }
+
+    @Test
     void dependentSelectorsAvoidRebuildingTheirOwnOptionListsOnEveryRefresh() throws Exception {
         String js = buildJavaScript();
         assertTrue(js.contains("function syncChoiceItems(fieldName, items){"), "JS should cache dynamic selector options");
