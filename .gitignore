@@ -1,0 +1,14 @@
+.serena/
+.ruff_cache/
+
+generator/target/
+generator/.classpath
+generator/.project
+generator/.settings/
+
+matricula_interactiva.pdf
+
+debug/acrobat-reader/matricula_*.pdf
+debug/acrobat-reader/report_matricula_*.md
+
+.DS_Store
