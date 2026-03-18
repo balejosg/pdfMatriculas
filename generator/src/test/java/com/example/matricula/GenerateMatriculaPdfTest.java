@@ -134,8 +134,8 @@ class GenerateMatriculaPdfTest {
     }
 
     @Test
-    void page2DefaultWidgetsAreOrderedAboveOverlappingAlternatives() throws Exception {
-        Path output = Files.createTempFile("matricula-page2-order", ".pdf");
+    void page2InteractiveWidgetsDoNotOverlap() throws Exception {
+        Path output = Files.createTempFile("matricula-page2-layout", ".pdf");
         try {
             GenerateMatriculaPdf.main(new String[]{
                     "--model", "../data/model.json",
@@ -155,21 +155,62 @@ class GenerateMatriculaPdfTest {
                     }
                 }
 
-                List<String> page2Order = new ArrayList<>();
+                List<String> overlaps = new ArrayList<>();
+                List<PDAnnotationWidget> widgets = new ArrayList<>();
+                Map<String, PDAnnotationWidget> widgetsByName = new HashMap<>();
                 for (PDAnnotation annotation : document.getPage(1).getAnnotations()) {
                     if (annotation instanceof PDAnnotationWidget) {
                         String name = widgetNames.get(annotation.getCOSObject());
-                        if (name != null) {
-                            page2Order.add(name);
+                        if (name != null && !"ResumenAcademico".equals(name)) {
+                            PDAnnotationWidget widget = (PDAnnotationWidget) annotation;
+                            widgets.add(widget);
+                            widgetsByName.put(name, widget);
                         }
                     }
                 }
 
-                assertGreater(page2Order, "txtEstudios", "child_txtEstudios");
-                assertGreater(page2Order, "txtESO_Cursos", "txtBACH_Cursos");
-                assertGreater(page2Order, "txtESO_Cursos", "txtCICLOS_Cursos");
-                assertGreater(page2Order, "btnValidate", "ResumenAcademico");
-                assertGreater(page2Order, "btnTogglePreview", "ResumenAcademico");
+                for (int i = 0; i < widgets.size(); i++) {
+                    PDAnnotationWidget left = widgets.get(i);
+                    String leftName = widgetNames.get(left.getCOSObject());
+                    for (int j = i + 1; j < widgets.size(); j++) {
+                        PDAnnotationWidget right = widgets.get(j);
+                        String rightName = widgetNames.get(right.getCOSObject());
+                        if (rectanglesOverlap(left.getRectangle(), right.getRectangle())) {
+                            overlaps.add(leftName + " <-> " + rightName);
+                        }
+                    }
+                }
+
+                assertTrue(overlaps.isEmpty(), () -> "Page 2 should not contain overlapping widgets, found: " + overlaps);
+
+                float signatureTopY = 416.6f;
+                float signatureClearance = 20f;
+                List<String> tooCloseToSignatures = new ArrayList<>();
+                for (PDAnnotationWidget widget : widgets) {
+                    String name = widgetNames.get(widget.getCOSObject());
+                    if (name == null || name.startsWith("sig_") || name.startsWith("child_")) {
+                        continue;
+                    }
+                    float bottomY = widget.getRectangle().getLowerLeftY();
+                    if (bottomY > signatureTopY && bottomY < signatureTopY + signatureClearance) {
+                        tooCloseToSignatures.add(name + "@" + bottomY);
+                    }
+                }
+
+                assertTrue(
+                        tooCloseToSignatures.isEmpty(),
+                        () -> "Page 2 selectors above the signature band need at least " + signatureClearance
+                                + "pt of clearance, found: " + tooCloseToSignatures
+                );
+
+                assertTrue(
+                        verticalGap(widgetsByName.get("txtDobleMatricula"), widgetsByName.get("optTroncal_1")) >= 6f,
+                        "Doble matricula should keep clear vertical separation from Tr1"
+                );
+                assertTrue(
+                        verticalGap(widgetsByName.get("lblC3"), widgetsByName.get("lblOpt7")) >= 8f,
+                        "C3 should keep clear vertical separation from O7"
+                );
             }
         } finally {
             Files.deleteIfExists(output);
@@ -248,11 +289,15 @@ class GenerateMatriculaPdfTest {
         return (String) method.invoke(null, model);
     }
 
-    private static void assertGreater(List<String> orderedFields, String higherPriorityField, String lowerPriorityField) {
-        int higher = orderedFields.indexOf(higherPriorityField);
-        int lower = orderedFields.indexOf(lowerPriorityField);
-        assertTrue(higher >= 0, () -> "Missing field in page-2 annotation order: " + higherPriorityField);
-        assertTrue(lower >= 0, () -> "Missing field in page-2 annotation order: " + lowerPriorityField);
-        assertTrue(higher > lower, () -> higherPriorityField + " should be ordered after " + lowerPriorityField + " on page 2");
+    private static boolean rectanglesOverlap(org.apache.pdfbox.pdmodel.common.PDRectangle left, org.apache.pdfbox.pdmodel.common.PDRectangle right) {
+        float overlapWidth = Math.min(left.getUpperRightX(), right.getUpperRightX()) - Math.max(left.getLowerLeftX(), right.getLowerLeftX());
+        float overlapHeight = Math.min(left.getUpperRightY(), right.getUpperRightY()) - Math.max(left.getLowerLeftY(), right.getLowerLeftY());
+        return overlapWidth > 0 && overlapHeight > 0;
+    }
+
+    private static float verticalGap(PDAnnotationWidget upper, PDAnnotationWidget lower) {
+        assertNotNull(upper);
+        assertNotNull(lower);
+        return upper.getRectangle().getLowerLeftY() - lower.getRectangle().getUpperRightY();
     }
 }

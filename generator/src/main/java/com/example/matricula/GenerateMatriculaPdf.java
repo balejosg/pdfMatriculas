@@ -220,121 +220,125 @@ public class GenerateMatriculaPdf {
                 resumen.setReadOnly(true);
             }
 
-            // UI mode label and buttons (no-print, visible in edit mode).
-            addLabel(form, page2, "uiModeLabel", rect(22, 660, 220, 14), 10);
-            addButton(form, page2, "btnTogglePreview", rect(460, 660, 115, 16), "Vista previa", false);
-            addButton(form, page2, "btnValidate", rect(345, 660, 110, 16), "Validar", false);
+            // UI mode bar and shared metadata fields (no-print, visible in edit mode).
+            addLabel(form, page2, "uiModeLabel", rect(22, 684, 170, 12), 10);
+            addText(form, page2, "txtLugar", rect(198, 684, 132, 12), 9, false, true);
+            addText(form, page2, "txtFecha", rect(336, 684, 60, 12), 9, false, true);
+            addButton(form, page2, "btnValidate", rect(404, 682, 78, 16), "Validar", false);
+            addButton(form, page2, "btnTogglePreview", rect(488, 682, 88, 16), "Vista previa", false);
 
-            // Academic selectors (main + child overlap positions).
-            float selLabelX = 22;
-            float selFieldX = 120;
-            float y = 640;
-            float rowH = 16;
-            float fieldW = 220;
-            // Main
-            addLabel(form, page2, "lblEstudios", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtEstudios", rect(selFieldX, y, fieldW, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblCurso", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtESO_Cursos", rect(selFieldX, y, 90, 14), 9, false, true);
-            addCombo(form, page2, "txtBACH_Cursos", rect(selFieldX, y, 90, 14), 9, false, true);
-            addCombo(form, page2, "txtCICLOS_Cursos", rect(selFieldX, y, 90, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblGrado", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtCICLOS_Grados", rect(selFieldX, y, fieldW, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblPrograma", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtESO_Programa", rect(selFieldX, y, fieldW, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblItinerario", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtESO_Itinerario", rect(selFieldX, y, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "txtBACH_Itinerario", rect(selFieldX, y, fieldW, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblMatriculaCompleta", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "matriculaCompleta", rect(selFieldX, y, 90, 14), 9, false, true);
-            y -= rowH;
-            addLabel(form, page2, "lblDoble", rect(selLabelX, y, 90, 14), 9);
-            addCombo(form, page2, "txtDobleMatricula", rect(selFieldX, y, 90, 14), 9, false, true);
+            // Principal academic section.
+            float mainLabelX = 22;
+            float mainFieldX = 112;
+            float selectorLabelW = 84;
+            float selectorFieldW = 186;
+            float selectorRowH = 14;
+            float mainSelectorY = 666;
+            addLabel(form, page2, "lblEstudios", rect(mainLabelX, mainSelectorY, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtEstudios", rect(mainFieldX, mainSelectorY, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblEsoCurso", rect(mainLabelX, mainSelectorY - selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtESO_Cursos", rect(mainFieldX, mainSelectorY - selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "lblBachCurso", rect(mainLabelX, mainSelectorY - 2 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtBACH_Cursos", rect(mainFieldX, mainSelectorY - 2 * selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "lblCiclosCurso", rect(mainLabelX, mainSelectorY - 3 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtCICLOS_Cursos", rect(mainFieldX, mainSelectorY - 3 * selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "lblGrado", rect(mainLabelX, mainSelectorY - 4 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtCICLOS_Grados", rect(mainFieldX, mainSelectorY - 4 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblPrograma", rect(mainLabelX, mainSelectorY - 5 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtESO_Programa", rect(mainFieldX, mainSelectorY - 5 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblEsoItinerario", rect(mainLabelX, mainSelectorY - 6 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtESO_Itinerario", rect(mainFieldX, mainSelectorY - 6 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblBachItinerario", rect(mainLabelX, mainSelectorY - 7 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtBACH_Itinerario", rect(mainFieldX, mainSelectorY - 7 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblMatriculaCompleta", rect(mainLabelX, mainSelectorY - 8 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "matriculaCompleta", rect(mainFieldX, mainSelectorY - 8 * selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "lblDoble", rect(mainLabelX, mainSelectorY - 9 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "txtDobleMatricula", rect(mainFieldX, mainSelectorY - 9 * selectorRowH, 90, 12), 9, false, true);
 
-            // Child selectors (same layout area, different names).
-            float yChildBase = 640;
-            addCombo(form, page2, "child_txtEstudios", rect(selFieldX, yChildBase, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "child_txtESO_Cursos", rect(selFieldX, yChildBase - rowH, 90, 14), 9, false, true);
-            addCombo(form, page2, "child_txtBACH_Cursos", rect(selFieldX, yChildBase - rowH, 90, 14), 9, false, true);
-            addCombo(form, page2, "child_txtCICLOS_Cursos", rect(selFieldX, yChildBase - rowH, 90, 14), 9, false, true);
-            addCombo(form, page2, "child_txtCICLOS_Grados", rect(selFieldX, yChildBase - 2 * rowH, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "child_txtESO_Programa", rect(selFieldX, yChildBase - 3 * rowH, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "child_txtESO_Itinerario", rect(selFieldX, yChildBase - 4 * rowH, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "child_txtBACH_Itinerario", rect(selFieldX, yChildBase - 4 * rowH, fieldW, 14), 9, false, true);
-            addCombo(form, page2, "child_matriculaCompleta", rect(selFieldX, yChildBase - 5 * rowH, 90, 14), 9, false, true);
-
-            // Slot fields arranged in two columns.
-            float col1X = 22;
-            float col1FieldX = 60;
-            float col2X = 310;
-            float col2FieldX = 348;
-            float slotYTop = 540;
-            float slotRowH = 16;
-            float slotW = 230;
-
-            // Troncales + comunes
-            addLabel(form, page2, "lblTr1", rect(col1X, slotYTop, 35, 14), 9);
-            addCombo(form, page2, "optTroncal_1", rect(col1FieldX, slotYTop, slotW, 14), 9, false, true);
-            addLabel(form, page2, "lblTr2", rect(col2X, slotYTop, 35, 14), 9);
-            addCombo(form, page2, "optTroncal_2", rect(col2FieldX, slotYTop, slotW, 14), 9, false, true);
-
-            float slotY = slotYTop - slotRowH;
-            addLabel(form, page2, "lblTr3", rect(col1X, slotY, 35, 14), 9);
-            addCombo(form, page2, "optTroncal_3", rect(col1FieldX, slotY, slotW, 14), 9, false, true);
-            addLabel(form, page2, "lblC1", rect(col2X, slotY, 35, 14), 9);
-            addCombo(form, page2, "optComun_1", rect(col2FieldX, slotY, slotW, 14), 9, false, true);
-
-            slotY -= slotRowH;
-            addLabel(form, page2, "lblC2", rect(col2X, slotY, 35, 14), 9);
-            addCombo(form, page2, "optComun_2", rect(col2FieldX, slotY, slotW, 14), 9, false, true);
-            addLabel(form, page2, "lblC3", rect(col2X, slotY - slotRowH, 35, 14), 9);
-            addCombo(form, page2, "optComun_3", rect(col2FieldX, slotY - slotRowH, slotW, 14), 9, false, true);
-
-            // Optativas 1..11
-            float optY = slotY - slotRowH;
-            for (int i = 1; i <= 11; i++) {
-                boolean left = i <= 6;
-                int row = left ? (i - 1) : (i - 7);
-                float baseY = optY - row * slotRowH;
-                float lx = left ? col1X : col2X;
-                float fx = left ? col1FieldX : col2FieldX;
-                addLabel(form, page2, "lblOpt" + i, rect(lx, baseY, 35, 14), 9);
-                addCombo(form, page2, "optativa_" + i, rect(fx, baseY, slotW, 14), 9, false, true);
-            }
-
-            // Child slot fields at same coordinates
-            addCombo(form, page2, "child_optTroncal_1", rect(col1FieldX, slotYTop, slotW, 14), 9, false, true);
-            addCombo(form, page2, "child_optTroncal_2", rect(col2FieldX, slotYTop, slotW, 14), 9, false, true);
-            addCombo(form, page2, "child_optTroncal_3", rect(col1FieldX, slotYTop - slotRowH, slotW, 14), 9, false, true);
-            addCombo(form, page2, "child_optComun_1", rect(col2FieldX, slotYTop - slotRowH, slotW, 14), 9, false, true);
-            addCombo(form, page2, "child_optComun_2", rect(col2FieldX, slotYTop - 2 * slotRowH, slotW, 14), 9, false, true);
-            addCombo(form, page2, "child_optComun_3", rect(col2FieldX, slotYTop - 3 * slotRowH, slotW, 14), 9, false, true);
-            for (int i = 1; i <= 11; i++) {
-                boolean left = i <= 6;
-                int row = left ? (i - 1) : (i - 7);
-                float baseY = optY - row * slotRowH;
-                float fx = left ? col1FieldX : col2FieldX;
-                addCombo(form, page2, "child_optativa_" + i, rect(fx, baseY, slotW, 14), 9, false, true);
-            }
-
-            // Free-text slots for BACH 2 when not full course (main + child).
+            float mainFreeLabelX = 314;
+            float mainFreeFieldX = 340;
+            float freeFieldW = 236;
             for (int i = 1; i <= 10; i++) {
-                boolean left = i <= 5;
-                int row = left ? (i - 1) : (i - 6);
-                float baseY = 420 - row * slotRowH;
-                float fx = left ? col1FieldX : col2FieldX;
-                addText(form, page2, "txtOptLibre_" + i, rect(fx, baseY, slotW, 14), 9, false, true);
-                addText(form, page2, "child_txtOptLibre_" + i, rect(fx, baseY, slotW, 14), 9, false, true);
+                float freeY = mainSelectorY - (i - 1) * selectorRowH;
+                addLabel(form, page2, "lblLibre" + i, rect(mainFreeLabelX, freeY, 22, 12), 9);
+                addText(form, page2, "txtOptLibre_" + i, rect(mainFreeFieldX, freeY, freeFieldW, 12), 9, false, true);
             }
 
-            // Date/place fields on page2 (from BACH template word positions)
-            addText(form, page2, "txtLugar", rect(28.1f, 430.4f, 171.7f, 12f), 9, true, false);
-            addText(form, page2, "txtFecha", rect(209.0f, 430.4f, 101.4f, 12f), 9, true, false);
+            // Principal selection grid in three columns.
+            float[] mainGridLabelX = new float[]{22, 205, 388};
+            float[] mainGridFieldX = new float[]{45, 228, 411};
+            float gridFieldW = 160;
+            float gridRowH = 14;
+            float mainGridY = 522;
+            addLabel(form, page2, "lblTr1", rect(mainGridLabelX[0], mainGridY, 20, 12), 9);
+            addCombo(form, page2, "optTroncal_1", rect(mainGridFieldX[0], mainGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblTr2", rect(mainGridLabelX[1], mainGridY, 20, 12), 9);
+            addCombo(form, page2, "optTroncal_2", rect(mainGridFieldX[1], mainGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblTr3", rect(mainGridLabelX[2], mainGridY, 20, 12), 9);
+            addCombo(form, page2, "optTroncal_3", rect(mainGridFieldX[2], mainGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblC1", rect(mainGridLabelX[0], mainGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "optComun_1", rect(mainGridFieldX[0], mainGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblC2", rect(mainGridLabelX[1], mainGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "optComun_2", rect(mainGridFieldX[1], mainGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "lblC3", rect(mainGridLabelX[2], mainGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "optComun_3", rect(mainGridFieldX[2], mainGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            for (int i = 1; i <= 11; i++) {
+                int zeroBased = i - 1;
+                int row = zeroBased / 3;
+                int col = zeroBased % 3;
+                float optY = mainGridY - (row + 3) * gridRowH;
+                addLabel(form, page2, "lblOpt" + i, rect(mainGridLabelX[col], optY, 20, 12), 9);
+                addCombo(form, page2, "optativa_" + i, rect(mainGridFieldX[col], optY, gridFieldW, 12), 9, false, true);
+            }
+
+            // Child academic section under the signature boxes.
+            float childSelectorY = 304;
+            addLabel(form, page2, "child_lblEstudios", rect(mainLabelX, childSelectorY, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtEstudios", rect(mainFieldX, childSelectorY, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblEsoCurso", rect(mainLabelX, childSelectorY - selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtESO_Cursos", rect(mainFieldX, childSelectorY - selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "child_lblBachCurso", rect(mainLabelX, childSelectorY - 2 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtBACH_Cursos", rect(mainFieldX, childSelectorY - 2 * selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "child_lblCiclosCurso", rect(mainLabelX, childSelectorY - 3 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtCICLOS_Cursos", rect(mainFieldX, childSelectorY - 3 * selectorRowH, 90, 12), 9, false, true);
+            addLabel(form, page2, "child_lblGrado", rect(mainLabelX, childSelectorY - 4 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtCICLOS_Grados", rect(mainFieldX, childSelectorY - 4 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblPrograma", rect(mainLabelX, childSelectorY - 5 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtESO_Programa", rect(mainFieldX, childSelectorY - 5 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblEsoItinerario", rect(mainLabelX, childSelectorY - 6 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtESO_Itinerario", rect(mainFieldX, childSelectorY - 6 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblBachItinerario", rect(mainLabelX, childSelectorY - 7 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_txtBACH_Itinerario", rect(mainFieldX, childSelectorY - 7 * selectorRowH, selectorFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblMatriculaCompleta", rect(mainLabelX, childSelectorY - 8 * selectorRowH, selectorLabelW, 12), 9);
+            addCombo(form, page2, "child_matriculaCompleta", rect(mainFieldX, childSelectorY - 8 * selectorRowH, 90, 12), 9, false, true);
+
+            for (int i = 1; i <= 10; i++) {
+                float freeY = childSelectorY - (i - 1) * selectorRowH;
+                addLabel(form, page2, "child_lblLibre" + i, rect(mainFreeLabelX, freeY, 22, 12), 9);
+                addText(form, page2, "child_txtOptLibre_" + i, rect(mainFreeFieldX, freeY, freeFieldW, 12), 9, false, true);
+            }
+
+            float childGridY = 150;
+            addLabel(form, page2, "child_lblTr1", rect(mainGridLabelX[0], childGridY, 20, 12), 9);
+            addCombo(form, page2, "child_optTroncal_1", rect(mainGridFieldX[0], childGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblTr2", rect(mainGridLabelX[1], childGridY, 20, 12), 9);
+            addCombo(form, page2, "child_optTroncal_2", rect(mainGridFieldX[1], childGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblTr3", rect(mainGridLabelX[2], childGridY, 20, 12), 9);
+            addCombo(form, page2, "child_optTroncal_3", rect(mainGridFieldX[2], childGridY, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblC1", rect(mainGridLabelX[0], childGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "child_optComun_1", rect(mainGridFieldX[0], childGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblC2", rect(mainGridLabelX[1], childGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "child_optComun_2", rect(mainGridFieldX[1], childGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            addLabel(form, page2, "child_lblC3", rect(mainGridLabelX[2], childGridY - gridRowH, 20, 12), 9);
+            addCombo(form, page2, "child_optComun_3", rect(mainGridFieldX[2], childGridY - gridRowH, gridFieldW, 12), 9, false, true);
+            for (int i = 1; i <= 11; i++) {
+                int zeroBased = i - 1;
+                int row = zeroBased / 3;
+                int col = zeroBased % 3;
+                float optY = childGridY - (row + 2) * gridRowH;
+                addLabel(form, page2, "child_lblOpt" + i, rect(mainGridLabelX[col], optY, 20, 12), 9);
+                addCombo(form, page2, "child_optativa_" + i, rect(mainGridFieldX[col], optY, gridFieldW, 12), 9, false, true);
+            }
 
             // Signature buttons (import image).
             addButton(form, page2, "sig_alumno", inset(cell(17.5f, 202.2f, 340.9f, 416.6f), 2, 2), "Firma alumno/a", true);
@@ -645,6 +649,8 @@ public class GenerateMatriculaPdf {
         sb.append("function itemsSignature(items){ if(!items) return ''; var parts=[]; for(var i=0;i<items.length;i++){ var it=items[i]||{}; parts.push(String(it.t||'')+'\\u0001'+String(it.v||'')); } return parts.join('\\u0002'); }\n");
         sb.append("function syncChoiceItems(fieldName, items){ var sig=itemsSignature(items); if(__choiceItemsSig[fieldName]!==sig){ setItems.call(this,fieldName, items); __choiceItemsSig[fieldName]=sig; } ensureValue.call(this,fieldName, items||[]); }\n");
         sb.append("function clearChoice(fieldName){ var x=f.call(this,fieldName); if(!x) return; __choiceItemsSig[fieldName]=''; try{ x.clearItems(); }catch(e){} try{ x.currentValueIndices = -1; }catch(e2){} }\n");
+        sb.append("function showUiField(fieldName, show){ var x=f.call(this,fieldName); if(x){ x.display = show ? display.visible : display.hidden; } }\n");
+        sb.append("function showUiLabel(fieldName, show){ var x=f.call(this,fieldName); if(x){ x.display = show ? display.noPrint : display.hidden; } }\n");
         sb.append("function scheduleUpdateAll(){ if(__suspendCascade || __updateAllQueued) return; __updateAllQueued = true; try{ app.setTimeOut(\"try{__updateAllQueued=false;updateAll();}catch(e){__updateAllQueued=false;}\", 0); }catch(e){ __updateAllQueued=false; try{ updateAll(); }catch(e2){} } }\n");
         sb.append("function scheduleResumen(){ if(__suspendCascade || __resumenQueued) return; __resumenQueued = true; try{ app.setTimeOut(\"try{__resumenQueued=false;updateResumen();}catch(e){__resumenQueued=false;}\", 0); }catch(e){ __resumenQueued=false; try{ updateResumen(); }catch(e2){} } }\n");
         sb.append("function ksDigits(maxLen){ try{ var ch = event.change || ''; ch = ch.replace(/[^0-9]/g,''); var cur = event.value || ''; var sel = (event.selEnd - event.selStart); var newLen = cur.length - sel + ch.length; if(maxLen && newLen>maxLen){ ch = ch.substring(0, ch.length - (newLen - maxLen)); } event.change = ch; }catch(e){} }\n");
@@ -676,19 +682,27 @@ public class GenerateMatriculaPdf {
         sb.append("}\n");
         sb.append("function applySelectorVisibility(prefix){\n");
         sb.append("  var est = sval.call(this,prefix+'txtEstudios');\n");
-        sb.append("  var eso = f.call(this,prefix+'txtESO_Cursos'); var bach = f.call(this,prefix+'txtBACH_Cursos'); var cic = f.call(this,prefix+'txtCICLOS_Cursos');\n");
+        sb.append("  var labelPrefix = prefix ? 'child_' : '';\n");
         sb.append("  if(est==='txtESO' && SELECTORS.txtESO_Cursos){ ensureValue.call(this,prefix+'txtESO_Cursos', SELECTORS.txtESO_Cursos); }\n");
         sb.append("  if(est==='txtBachillerato' && SELECTORS.txtBACH_Cursos){ ensureValue.call(this,prefix+'txtBACH_Cursos', SELECTORS.txtBACH_Cursos); }\n");
         sb.append("  if(est==='txtCiclosFormativos' && SELECTORS.txtCICLOS_Cursos){ ensureValue.call(this,prefix+'txtCICLOS_Cursos', SELECTORS.txtCICLOS_Cursos); }\n");
         sb.append("  if(est==='txtCiclosFormativos' && SELECTORS.txtCICLOS_Grados){ ensureValue.call(this,prefix+'txtCICLOS_Grados', SELECTORS.txtCICLOS_Grados); }\n");
-        sb.append("  if(eso) eso.display = (est==='txtESO') ? display.visible : display.hidden;\n");
-        sb.append("  if(bach) bach.display = (est==='txtBachillerato') ? display.visible : display.hidden;\n");
-        sb.append("  if(cic) cic.display = (est==='txtCiclosFormativos') ? display.visible : display.hidden;\n");
-        sb.append("  var grado = f.call(this,prefix+'txtCICLOS_Grados'); if(grado) grado.display = (est==='txtCiclosFormativos') ? display.visible : display.hidden;\n");
-        sb.append("  var prog = f.call(this,prefix+'txtESO_Programa'); if(prog) prog.display = (est==='txtESO') ? display.visible : display.hidden;\n");
-        sb.append("  var itEso = f.call(this,prefix+'txtESO_Itinerario'); if(itEso) itEso.display = display.hidden;\n");
-        sb.append("  var itBach = f.call(this,prefix+'txtBACH_Itinerario'); if(itBach) itBach.display = (est==='txtBachillerato') ? display.visible : display.hidden;\n");
-        sb.append("  var mc = f.call(this,prefix+'matriculaCompleta'); if(mc) mc.display = display.hidden;\n");
+        sb.append("  showUiField.call(this,prefix+'txtESO_Cursos', est==='txtESO');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblEsoCurso', est==='txtESO');\n");
+        sb.append("  showUiField.call(this,prefix+'txtBACH_Cursos', est==='txtBachillerato');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblBachCurso', est==='txtBachillerato');\n");
+        sb.append("  showUiField.call(this,prefix+'txtCICLOS_Cursos', est==='txtCiclosFormativos');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblCiclosCurso', est==='txtCiclosFormativos');\n");
+        sb.append("  showUiField.call(this,prefix+'txtCICLOS_Grados', est==='txtCiclosFormativos');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblGrado', est==='txtCiclosFormativos');\n");
+        sb.append("  showUiField.call(this,prefix+'txtESO_Programa', est==='txtESO');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblPrograma', est==='txtESO');\n");
+        sb.append("  showUiField.call(this,prefix+'txtESO_Itinerario', false);\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblEsoItinerario', false);\n");
+        sb.append("  showUiField.call(this,prefix+'txtBACH_Itinerario', est==='txtBachillerato');\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblBachItinerario', est==='txtBachillerato');\n");
+        sb.append("  showUiField.call(this,prefix+'matriculaCompleta', false);\n");
+        sb.append("  showUiLabel.call(this,labelPrefix+'lblMatriculaCompleta', false);\n");
         sb.append("  if(est==='txtBachillerato' && String(sval.call(this,prefix+'txtBACH_Cursos'))==='2' && SELECTORS.matriculaCompleta){ ensureValue.call(this,prefix+'matriculaCompleta', SELECTORS.matriculaCompleta); }\n");
         sb.append("}\n");
         sb.append("function getScenarioKey(prefix){\n");
@@ -704,10 +718,10 @@ public class GenerateMatriculaPdf {
         sb.append("    if(String(curso)==='4' && String(programa)!=='4'){\n");
         sb.append("      var itOpts = (SELECTORS.txtESO_C4_Itinerarios && SELECTORS.txtESO_C4_Itinerarios[String(programa)]) ? SELECTORS.txtESO_C4_Itinerarios[String(programa)] : (SELECTORS.txtESO_C4_Itinerarios?SELECTORS.txtESO_C4_Itinerarios['1']:[]);\n");
         sb.append("      var itField = f.call(this,prefix+'txtESO_Itinerario');\n");
-        sb.append("      if(itField){ itField.display = display.visible; syncChoiceItems.call(this,prefix+'txtESO_Itinerario', itOpts); }\n");
+        sb.append("      if(itField){ itField.display = display.visible; showUiLabel.call(this,(prefix?'child_':'')+'lblEsoItinerario', true); syncChoiceItems.call(this,prefix+'txtESO_Itinerario', itOpts); }\n");
         sb.append("      itinerario = sval.call(this,prefix+'txtESO_Itinerario') || (itOpts[0]?itOpts[0].v:'1');\n");
         sb.append("    } else {\n");
-        sb.append("      var itField2 = f.call(this,prefix+'txtESO_Itinerario'); if(itField2){ itField2.display = display.hidden; clearChoice.call(this,prefix+'txtESO_Itinerario'); }\n");
+        sb.append("      var itField2 = f.call(this,prefix+'txtESO_Itinerario'); if(itField2){ itField2.display = display.hidden; showUiLabel.call(this,(prefix?'child_':'')+'lblEsoItinerario', false); clearChoice.call(this,prefix+'txtESO_Itinerario'); }\n");
         sb.append("    }\n");
         sb.append("    return (prefix?prefix:'') + 'ESO_C'+curso+'_P'+programa+'_It'+itinerario;\n");
         sb.append("  }\n");
@@ -719,7 +733,7 @@ public class GenerateMatriculaPdf {
         sb.append("    var itB = sval.call(this,prefix+'txtBACH_Itinerario') || (itOptsB[0]?itOptsB[0].v:'1');\n");
         sb.append("    // matriculaCompleta only for 2nd\n");
         sb.append("    var mcF = f.call(this,prefix+'matriculaCompleta');\n");
-        sb.append("    if(mcF){ mcF.display = (String(cursoB)==='2') ? display.visible : display.hidden; }\n");
+        sb.append("    if(mcF){ var showMc = (String(cursoB)==='2'); mcF.display = showMc ? display.visible : display.hidden; showUiLabel.call(this,(prefix?'child_':'')+'lblMatriculaCompleta', showMc); }\n");
         sb.append("    return (prefix?prefix:'') + 'BACH_C'+cursoB+'_P0_It'+itB;\n");
         sb.append("  }\n");
         sb.append("  if(est==='txtCiclosFormativos'){\n");
@@ -734,29 +748,27 @@ public class GenerateMatriculaPdf {
         sb.append("function applyScenario(prefix){\n");
         sb.append("  var key = getScenarioKey.call(this,prefix);\n");
         sb.append("  var data = key && SCENARIOS[key] ? SCENARIOS[key] : null;\n");
-        sb.append("  // Hide free-text by default\n");
-        sb.append("  for(var i=1;i<=10;i++){ var tf=f.call(this,prefix+'txtOptLibre_'+i); if(tf){ tf.display = display.hidden; tf.value=''; } }\n");
+        sb.append("  var labelPrefix = prefix ? 'child_' : '';\n");
+        sb.append("  for(var i=1;i<=10;i++){ var tf=f.call(this,prefix+'txtOptLibre_'+i); if(tf){ tf.display = display.hidden; tf.value=''; } showUiLabel.call(this,labelPrefix+'lblLibre'+i, false); }\n");
         sb.append("  if(data===null){\n");
-        sb.append("    for(var j=1;j<=11;j++){ var of=f.call(this,prefix+'optativa_'+j); if(of){ of.display=display.hidden; clearChoice.call(this,prefix+'optativa_'+j); } }\n");
-        sb.append("    for(var k=1;k<=3;k++){ var tr=f.call(this,prefix+'optTroncal_'+k); if(tr){ tr.display=display.hidden; clearChoice.call(this,prefix+'optTroncal_'+k); } var co=f.call(this,prefix+'optComun_'+k); if(co){ co.display=display.hidden; clearChoice.call(this,prefix+'optComun_'+k); } }\n");
+        sb.append("    for(var j=1;j<=11;j++){ var of=f.call(this,prefix+'optativa_'+j); if(of){ of.display=display.hidden; clearChoice.call(this,prefix+'optativa_'+j); } showUiLabel.call(this,labelPrefix+'lblOpt'+j, false); }\n");
+        sb.append("    for(var k=1;k<=3;k++){ var tr=f.call(this,prefix+'optTroncal_'+k); if(tr){ tr.display=display.hidden; clearChoice.call(this,prefix+'optTroncal_'+k); } showUiLabel.call(this,labelPrefix+'lblTr'+k, false); var co=f.call(this,prefix+'optComun_'+k); if(co){ co.display=display.hidden; clearChoice.call(this,prefix+'optComun_'+k); } showUiLabel.call(this,labelPrefix+'lblC'+k, false); }\n");
         sb.append("    return;\n");
         sb.append("  }\n");
-        sb.append("  // Handle BACH 2 matriculaCompleta=0 => free text\n");
         sb.append("  var est = sval.call(this,prefix+'txtEstudios');\n");
         sb.append("  var isBach = (est==='txtBachillerato');\n");
         sb.append("  var cursoB = isBach ? sval.call(this,prefix+'txtBACH_Cursos') : '';\n");
         sb.append("  var mc = isBach && String(cursoB)==='2' ? sval.call(this, prefix+'matriculaCompleta') : '1';\n");
         sb.append("  var useFree = isBach && String(cursoB)==='2' && String(mc)==='0';\n");
         sb.append("  if(useFree){\n");
-        sb.append("    for(var i2=1;i2<=11;i2++){ var of2=f.call(this,prefix+'optativa_'+i2); if(of2){ of2.display=display.hidden; clearChoice.call(this,prefix+'optativa_'+i2); } }\n");
-        sb.append("    for(var k2=1;k2<=3;k2++){ var tr2=f.call(this,prefix+'optTroncal_'+k2); if(tr2){ tr2.display=display.hidden; clearChoice.call(this,prefix+'optTroncal_'+k2); } var co2=f.call(this,prefix+'optComun_'+k2); if(co2){ co2.display=display.hidden; clearChoice.call(this,prefix+'optComun_'+k2); } }\n");
-        sb.append("    for(var i3=1;i3<=10;i3++){ var tf2=f.call(this,prefix+'txtOptLibre_'+i3); if(tf2){ tf2.display = display.visible; } }\n");
+        sb.append("    for(var i2=1;i2<=11;i2++){ var of2=f.call(this,prefix+'optativa_'+i2); if(of2){ of2.display=display.hidden; clearChoice.call(this,prefix+'optativa_'+i2); } showUiLabel.call(this,labelPrefix+'lblOpt'+i2, false); }\n");
+        sb.append("    for(var k2=1;k2<=3;k2++){ var tr2=f.call(this,prefix+'optTroncal_'+k2); if(tr2){ tr2.display=display.hidden; clearChoice.call(this,prefix+'optTroncal_'+k2); } showUiLabel.call(this,labelPrefix+'lblTr'+k2, false); var co2=f.call(this,prefix+'optComun_'+k2); if(co2){ co2.display=display.hidden; clearChoice.call(this,prefix+'optComun_'+k2); } showUiLabel.call(this,labelPrefix+'lblC'+k2, false); }\n");
+        sb.append("    for(var i3=1;i3<=10;i3++){ var tf2=f.call(this,prefix+'txtOptLibre_'+i3); if(tf2){ tf2.display = display.visible; } showUiLabel.call(this,labelPrefix+'lblLibre'+i3, true); }\n");
         sb.append("    return;\n");
         sb.append("  }\n");
-        sb.append("  // Populate slot combos\n");
-        sb.append("  for(var t=1;t<=3;t++){ var trf=f.call(this,prefix+'optTroncal_'+t); var tro=data.tron && data.tron[String(t)] ? data.tron[String(t)] : null; if(trf){ if(tro && tro.length>0){ trf.display=display.visible; setItems.call(this,prefix+'optTroncal_'+t, tro); ensureValue.call(this,prefix+'optTroncal_'+t, tro);} else { trf.display=display.hidden; clearChoice.call(this,prefix+'optTroncal_'+t); } } }\n");
-        sb.append("  for(var c=1;c<=3;c++){ var cof=f.call(this,prefix+'optComun_'+c); var coo=data.com && data.com[String(c)] ? data.com[String(c)] : null; if(cof){ if(coo && coo.length>0){ cof.display=display.visible; setItems.call(this,prefix+'optComun_'+c, coo); ensureValue.call(this,prefix+'optComun_'+c, coo);} else { cof.display=display.hidden; clearChoice.call(this,prefix+'optComun_'+c); } } }\n");
-        sb.append("  for(var o=1;o<=11;o++){ var of=f.call(this,prefix+'optativa_'+o); var oo=data.opt && data.opt[String(o)] ? data.opt[String(o)] : null; if(of){ if(oo && oo.length>0){ of.display=display.visible; setItems.call(this,prefix+'optativa_'+o, oo); ensureValue.call(this,prefix+'optativa_'+o, oo);} else { of.display=display.hidden; clearChoice.call(this,prefix+'optativa_'+o); } } }\n");
+        sb.append("  for(var t=1;t<=3;t++){ var trf=f.call(this,prefix+'optTroncal_'+t); var tro=data.tron && data.tron[String(t)] ? data.tron[String(t)] : null; if(trf){ if(tro && tro.length>0){ trf.display=display.visible; setItems.call(this,prefix+'optTroncal_'+t, tro); ensureValue.call(this,prefix+'optTroncal_'+t, tro); showUiLabel.call(this,labelPrefix+'lblTr'+t, true);} else { trf.display=display.hidden; showUiLabel.call(this,labelPrefix+'lblTr'+t, false); clearChoice.call(this,prefix+'optTroncal_'+t); } } }\n");
+        sb.append("  for(var c=1;c<=3;c++){ var cof=f.call(this,prefix+'optComun_'+c); var coo=data.com && data.com[String(c)] ? data.com[String(c)] : null; if(cof){ if(coo && coo.length>0){ cof.display=display.visible; setItems.call(this,prefix+'optComun_'+c, coo); ensureValue.call(this,prefix+'optComun_'+c, coo); showUiLabel.call(this,labelPrefix+'lblC'+c, true);} else { cof.display=display.hidden; showUiLabel.call(this,labelPrefix+'lblC'+c, false); clearChoice.call(this,prefix+'optComun_'+c); } } }\n");
+        sb.append("  for(var o=1;o<=11;o++){ var of=f.call(this,prefix+'optativa_'+o); var oo=data.opt && data.opt[String(o)] ? data.opt[String(o)] : null; if(of){ if(oo && oo.length>0){ of.display=display.visible; setItems.call(this,prefix+'optativa_'+o, oo); ensureValue.call(this,prefix+'optativa_'+o, oo); showUiLabel.call(this,labelPrefix+'lblOpt'+o, true);} else { of.display=display.hidden; showUiLabel.call(this,labelPrefix+'lblOpt'+o, false); clearChoice.call(this,prefix+'optativa_'+o); } } }\n");
         sb.append("}\n");
         sb.append("function buildHeader(){\n");
         sb.append("  var est = sval.call(this,'txtEstudios');\n");
@@ -787,16 +799,20 @@ public class GenerateMatriculaPdf {
         sb.append("  } finally { __suspendCascade = prevSuspend; }\n");
         sb.append("}\n");
         sb.append("function setUiMode(mode){ __uiMode = mode; var lbl=f.call(this,'uiModeLabel'); if(lbl) lbl.value = (mode==='child')?'Edicion: Repeticion':'Edicion: Principal';\n");
-        sb.append("  var mainFields=['txtEstudios','txtESO_Cursos','txtBACH_Cursos','txtCICLOS_Cursos','txtCICLOS_Grados','txtESO_Programa','txtESO_Itinerario','txtBACH_Itinerario','matriculaCompleta'];\n");
+        sb.append("  if(__preview) return;\n");
+        sb.append("  var mainFields=['txtEstudios','txtESO_Cursos','txtBACH_Cursos','txtCICLOS_Cursos','txtCICLOS_Grados','txtESO_Programa','txtESO_Itinerario','txtBACH_Itinerario','matriculaCompleta','txtDobleMatricula'];\n");
         sb.append("  var childFields=['child_txtEstudios','child_txtESO_Cursos','child_txtBACH_Cursos','child_txtCICLOS_Cursos','child_txtCICLOS_Grados','child_txtESO_Programa','child_txtESO_Itinerario','child_txtBACH_Itinerario','child_matriculaCompleta'];\n");
-        sb.append("  for(var i=1;i<=11;i++){ mainFields.push('optativa_'+i); childFields.push('child_optativa_'+i);}\n");
-        sb.append("  for(var t=1;t<=3;t++){ mainFields.push('optTroncal_'+t); mainFields.push('optComun_'+t); childFields.push('child_optTroncal_'+t); childFields.push('child_optComun_'+t);}\n");
-        sb.append("  for(var j=1;j<=10;j++){ mainFields.push('txtOptLibre_'+j); childFields.push('child_txtOptLibre_'+j);}\n");
-        sb.append("  function showList(lst, show){ for(var k=0;k<lst.length;k++){ var ff=f.call(this,lst[k]); if(!ff) continue; if(show){ ff.display = display.noPrint; } else { ff.display = display.hidden; } } }\n");
-        sb.append("  if(mode==='child'){ showList.call(this, mainFields, false); showList.call(this, childFields, true); } else { showList.call(this, childFields, false); showList.call(this, mainFields, true); }\n");
-        sb.append("  // Doble matricula affects child\n");
+        sb.append("  var mainLabels=['lblEstudios','lblEsoCurso','lblBachCurso','lblCiclosCurso','lblGrado','lblPrograma','lblEsoItinerario','lblBachItinerario','lblMatriculaCompleta','lblDoble'];\n");
+        sb.append("  var childLabels=['child_lblEstudios','child_lblEsoCurso','child_lblBachCurso','child_lblCiclosCurso','child_lblGrado','child_lblPrograma','child_lblEsoItinerario','child_lblBachItinerario','child_lblMatriculaCompleta'];\n");
+        sb.append("  for(var i=1;i<=11;i++){ mainFields.push('optativa_'+i); childFields.push('child_optativa_'+i); mainLabels.push('lblOpt'+i); childLabels.push('child_lblOpt'+i); }\n");
+        sb.append("  for(var t=1;t<=3;t++){ mainFields.push('optTroncal_'+t); mainFields.push('optComun_'+t); childFields.push('child_optTroncal_'+t); childFields.push('child_optComun_'+t); mainLabels.push('lblTr'+t); mainLabels.push('lblC'+t); childLabels.push('child_lblTr'+t); childLabels.push('child_lblC'+t); }\n");
+        sb.append("  for(var j=1;j<=10;j++){ mainFields.push('txtOptLibre_'+j); childFields.push('child_txtOptLibre_'+j); mainLabels.push('lblLibre'+j); childLabels.push('child_lblLibre'+j); }\n");
+        sb.append("  function showFieldList(lst, show){ for(var k=0;k<lst.length;k++){ showUiField.call(this,lst[k], show); } }\n");
+        sb.append("  function showLabelList(lst, show){ for(var k=0;k<lst.length;k++){ showUiLabel.call(this,lst[k], show); } }\n");
+        sb.append("  if(mode==='child'){ showFieldList.call(this, mainFields, false); showLabelList.call(this, mainLabels, false); showFieldList.call(this, childFields, true); showLabelList.call(this, childLabels, true); }\n");
+        sb.append("  else { showFieldList.call(this, childFields, false); showLabelList.call(this, childLabels, false); showFieldList.call(this, mainFields, true); showLabelList.call(this, mainLabels, true); }\n");
         sb.append("  var dm = String(sval.call(this,'txtDobleMatricula'))==='1';\n");
-        sb.append("  if(!dm){ showList.call(this, childFields, false); }\n");
+        sb.append("  if(!dm){ showFieldList.call(this, childFields, false); showLabelList.call(this, childLabels, false); }\n");
         sb.append("}\n");
         sb.append("function toggleUiMode(){\n");
         sb.append("  if(String(sval.call(this,'txtDobleMatricula'))!=='1'){ setUiMode.call(this,'main'); return; }\n");
@@ -804,10 +820,25 @@ public class GenerateMatriculaPdf {
         sb.append("  setUiMode.call(this,next);\n");
         sb.append("}\n");
         sb.append("function setPreview(on){ __preview=on; var r=f.call(this,'ResumenAcademico'); if(r){ r.display = on ? display.visible : display.hidden; }\n");
-        sb.append("  var ui = ['uiModeLabel','btnValidate','lblEstudios','lblCurso','lblGrado','lblPrograma','lblItinerario','lblMatriculaCompleta','lblDoble','lblTr1','lblTr2','lblTr3','lblC1','lblC2','lblC3'];\n");
-        sb.append("  for(var i=1;i<=11;i++){ ui.push('lblOpt'+i); }\n");
-        sb.append("  for(var i2=0;i2<ui.length;i2++){ var lf=f.call(this,ui[i2]); if(lf) lf.display = on ? display.hidden : display.noPrint; }\n");
-        sb.append("  if(on){ setUiMode.call(this,'main'); } else { setUiMode.call(this, __uiMode); }\n");
+        sb.append("  var mainFields=['txtEstudios','txtESO_Cursos','txtBACH_Cursos','txtCICLOS_Cursos','txtCICLOS_Grados','txtESO_Programa','txtESO_Itinerario','txtBACH_Itinerario','matriculaCompleta','txtDobleMatricula'];\n");
+        sb.append("  var childFields=['child_txtEstudios','child_txtESO_Cursos','child_txtBACH_Cursos','child_txtCICLOS_Cursos','child_txtCICLOS_Grados','child_txtESO_Programa','child_txtESO_Itinerario','child_txtBACH_Itinerario','child_matriculaCompleta'];\n");
+        sb.append("  var labels=['uiModeLabel','lblEstudios','lblEsoCurso','lblBachCurso','lblCiclosCurso','lblGrado','lblPrograma','lblEsoItinerario','lblBachItinerario','lblMatriculaCompleta','lblDoble','child_lblEstudios','child_lblEsoCurso','child_lblBachCurso','child_lblCiclosCurso','child_lblGrado','child_lblPrograma','child_lblEsoItinerario','child_lblBachItinerario','child_lblMatriculaCompleta'];\n");
+        sb.append("  for(var i=1;i<=11;i++){ mainFields.push('optativa_'+i); childFields.push('child_optativa_'+i); labels.push('lblOpt'+i); labels.push('child_lblOpt'+i); }\n");
+        sb.append("  for(var t=1;t<=3;t++){ mainFields.push('optTroncal_'+t); mainFields.push('optComun_'+t); childFields.push('child_optTroncal_'+t); childFields.push('child_optComun_'+t); labels.push('lblTr'+t); labels.push('lblC'+t); labels.push('child_lblTr'+t); labels.push('child_lblC'+t); }\n");
+        sb.append("  for(var j=1;j<=10;j++){ mainFields.push('txtOptLibre_'+j); childFields.push('child_txtOptLibre_'+j); labels.push('lblLibre'+j); labels.push('child_lblLibre'+j); }\n");
+        sb.append("  if(on){\n");
+        sb.append("    for(var a=0;a<mainFields.length;a++){ showUiField.call(this,mainFields[a], false); }\n");
+        sb.append("    for(var b=0;b<childFields.length;b++){ showUiField.call(this,childFields[b], false); }\n");
+        sb.append("    for(var c=0;c<labels.length;c++){ showUiLabel.call(this,labels[c], false); }\n");
+        sb.append("    showUiField.call(this,'txtLugar', false);\n");
+        sb.append("    showUiField.call(this,'txtFecha', false);\n");
+        sb.append("    showUiField.call(this,'btnValidate', false);\n");
+        sb.append("  } else {\n");
+        sb.append("    showUiField.call(this,'txtLugar', true);\n");
+        sb.append("    showUiField.call(this,'txtFecha', true);\n");
+        sb.append("    showUiField.call(this,'btnValidate', true);\n");
+        sb.append("    setUiMode.call(this, __uiMode);\n");
+        sb.append("  }\n");
         sb.append("}\n");
         sb.append("function togglePreview(){ setPreview.call(this,!__preview); var b=f.call(this,'btnTogglePreview'); if(b){ try{ b.buttonSetCaption(__preview?'Editar':'Vista previa'); }catch(e){} } }\n");
         sb.append("function updateAll(){\n");
@@ -818,9 +849,12 @@ public class GenerateMatriculaPdf {
         sb.append("  if(String(sval.call(this,'txtDobleMatricula'))==='1'){ applySelectorVisibility.call(this,'child_'); applyScenario.call(this,'child_'); }\n");
         sb.append("  buildHeader.call(this); syncCopies.call(this); updateResumen.call(this);\n");
         sb.append("  // Labels\n");
-        sb.append("  var L = {lblEstudios:'Estudios', lblCurso:'Curso', lblGrado:'Grado', lblPrograma:'Programa', lblItinerario:'Itinerario', lblMatriculaCompleta:'Curso completo', lblDoble:'Doble matricula', lblTr1:'Tr1', lblTr2:'Tr2', lblTr3:'Tr3', lblC1:'C1', lblC2:'C2', lblC3:'C3'};\n");
-        sb.append("  for(var k in L){ var lf=f.call(this,k); if(lf) lf.value=L[k]; }\n");
-        sb.append("  for(var i=1;i<=11;i++){ var lf2=f.call(this,'lblOpt'+i); if(lf2) lf2.value='O'+i; }\n");
+        sb.append("  var L = {lblEstudios:'Estudios', lblEsoCurso:'Curso ESO', lblBachCurso:'Curso Bach.', lblCiclosCurso:'Curso CFG', lblGrado:'Grado', lblPrograma:'Programa', lblEsoItinerario:'Itin. ESO', lblBachItinerario:'Itin. Bach.', lblMatriculaCompleta:'Curso completo', lblDoble:'Doble matricula'};\n");
+        sb.append("  var prefixes=['','child_'];\n");
+        sb.append("  for(var p=0;p<prefixes.length;p++){ var px=prefixes[p]; for(var k in L){ var lf=f.call(this,px+k); if(lf) lf.value=L[k]; } }\n");
+        sb.append("  for(var i=1;i<=11;i++){ for(var p2=0;p2<prefixes.length;p2++){ var lf2=f.call(this,prefixes[p2]+'lblOpt'+i); if(lf2) lf2.value='O'+i; } }\n");
+        sb.append("  for(var i2=1;i2<=3;i2++){ for(var p3=0;p3<prefixes.length;p3++){ var pf=prefixes[p3]; var lt=f.call(this,pf+'lblTr'+i2); if(lt) lt.value='T'+i2; var lc=f.call(this,pf+'lblC'+i2); if(lc) lc.value='C'+i2; } }\n");
+        sb.append("  for(var i3=1;i3<=10;i3++){ for(var p4=0;p4<prefixes.length;p4++){ var lf3=f.call(this,prefixes[p4]+'lblLibre'+i3); if(lf3) lf3.value='L'+i3; } }\n");
         sb.append("  } finally { __suspendCascade = prevSuspend; }\n");
         sb.append("}\n");
         sb.append("function validateAll(){\n");
