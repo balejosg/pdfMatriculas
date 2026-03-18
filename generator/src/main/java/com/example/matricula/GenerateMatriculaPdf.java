@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.*;
@@ -363,6 +364,7 @@ public class GenerateMatriculaPdf {
 
             // Attach per-field actions.
             attachScripts(form);
+            reorderPage2WidgetsForDefaultState(form, page2);
 
             doc.save(args.out.toFile());
         }
@@ -386,6 +388,54 @@ public class GenerateMatriculaPdf {
 
     private static PDRectangle inset(PDRectangle r, float ix, float iy) {
         return rect(r.getLowerLeftX() + ix, r.getLowerLeftY() + iy, r.getWidth() - 2 * ix, r.getHeight() - 2 * iy);
+    }
+
+    private static void reorderPage2WidgetsForDefaultState(PDAcroForm form, PDPage page) throws IOException {
+        Map<Object, String> fieldNamesByWidget = new HashMap<>();
+        for (PDField field : form.getFieldTree()) {
+            for (PDAnnotationWidget widget : field.getWidgets()) {
+                fieldNamesByWidget.put(widget.getCOSObject(), field.getFullyQualifiedName());
+            }
+        }
+
+        List<PDAnnotation> reordered = new ArrayList<>(page.getAnnotations());
+        reordered.sort(Comparator.comparingInt(annotation -> page2AnnotationPriority(annotation, fieldNamesByWidget)));
+        page.setAnnotations(reordered);
+    }
+
+    private static int page2AnnotationPriority(PDAnnotation annotation, Map<Object, String> fieldNamesByWidget) {
+        if (!(annotation instanceof PDAnnotationWidget)) {
+            return 10;
+        }
+
+        String name = fieldNamesByWidget.get(annotation.getCOSObject());
+        if (name == null) {
+            return 10;
+        }
+
+        if ("ResumenAcademico".equals(name)) {
+            return 0;
+        }
+
+        if (name.startsWith("child_")) {
+            return 1;
+        }
+
+        if (Set.of("txtBACH_Cursos", "txtCICLOS_Cursos", "txtCICLOS_Grados", "txtESO_Itinerario",
+                "txtBACH_Itinerario", "matriculaCompleta").contains(name)) {
+            return 2;
+        }
+
+        if (name.startsWith("sig_")) {
+            return 4;
+        }
+
+        if (Set.of("uiModeLabel", "btnTogglePreview", "btnValidate", "txtEstudios", "txtESO_Cursos",
+                "txtESO_Programa", "txtDobleMatricula").contains(name)) {
+            return 5;
+        }
+
+        return 3;
     }
 
     private static PDTextField addText(PDAcroForm form, PDPage page, String name, PDRectangle r, int fontSize, boolean print, boolean noPrintUi) throws IOException {

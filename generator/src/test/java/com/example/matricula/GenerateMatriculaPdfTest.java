@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
@@ -16,7 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -130,6 +133,49 @@ class GenerateMatriculaPdfTest {
         assertFalse(js.contains("if(itF){ setItems.call(this,prefix+'txtBACH_Itinerario', itOptsB); ensureValue.call(this,prefix+'txtBACH_Itinerario', itOptsB); }"), "Bach itinerary selector should not be rebuilt unconditionally");
     }
 
+    @Test
+    void page2DefaultWidgetsAreOrderedAboveOverlappingAlternatives() throws Exception {
+        Path output = Files.createTempFile("matricula-page2-order", ".pdf");
+        try {
+            GenerateMatriculaPdf.main(new String[]{
+                    "--model", "../data/model.json",
+                    "--bg1", "../assets/backgrounds/bg_page1.png",
+                    "--bg2", "../assets/backgrounds/bg_page2.png",
+                    "--out", output.toString()
+            });
+
+            try (PDDocument document = PDDocument.load(output.toFile())) {
+                PDAcroForm form = document.getDocumentCatalog().getAcroForm();
+                assertNotNull(form);
+
+                Map<Object, String> widgetNames = new HashMap<>();
+                for (PDField field : form.getFieldTree()) {
+                    for (PDAnnotationWidget widget : field.getWidgets()) {
+                        widgetNames.put(widget.getCOSObject(), field.getFullyQualifiedName());
+                    }
+                }
+
+                List<String> page2Order = new ArrayList<>();
+                for (PDAnnotation annotation : document.getPage(1).getAnnotations()) {
+                    if (annotation instanceof PDAnnotationWidget) {
+                        String name = widgetNames.get(annotation.getCOSObject());
+                        if (name != null) {
+                            page2Order.add(name);
+                        }
+                    }
+                }
+
+                assertGreater(page2Order, "txtEstudios", "child_txtEstudios");
+                assertGreater(page2Order, "txtESO_Cursos", "txtBACH_Cursos");
+                assertGreater(page2Order, "txtESO_Cursos", "txtCICLOS_Cursos");
+                assertGreater(page2Order, "btnValidate", "ResumenAcademico");
+                assertGreater(page2Order, "btnTogglePreview", "ResumenAcademico");
+            }
+        } finally {
+            Files.deleteIfExists(output);
+        }
+    }
+
     private static void assertRefreshesOnBlur(PDAcroForm form, String fieldName, String scriptFragment) throws IOException {
         PDField field = form.getField(fieldName);
         assertNotNull(field, () -> "Missing field: " + fieldName);
@@ -200,5 +246,13 @@ class GenerateMatriculaPdfTest {
         method.setAccessible(true);
         String model = Files.readString(Path.of("../data/model.json"), StandardCharsets.UTF_8);
         return (String) method.invoke(null, model);
+    }
+
+    private static void assertGreater(List<String> orderedFields, String higherPriorityField, String lowerPriorityField) {
+        int higher = orderedFields.indexOf(higherPriorityField);
+        int lower = orderedFields.indexOf(lowerPriorityField);
+        assertTrue(higher >= 0, () -> "Missing field in page-2 annotation order: " + higherPriorityField);
+        assertTrue(lower >= 0, () -> "Missing field in page-2 annotation order: " + lowerPriorityField);
+        assertTrue(higher > lower, () -> higherPriorityField + " should be ordered after " + lowerPriorityField + " on page 2");
     }
 }
