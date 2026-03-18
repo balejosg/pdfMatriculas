@@ -11,6 +11,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +26,18 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenerateMatriculaPdfTest {
+
+    @Test
+    void backgroundAssetsKeepOfficialHeaderAndAcademicBody() throws Exception {
+        assertTrue(
+                darkPixelRatio(Path.of("../assets/backgrounds/bg_page1.png"), 450, 220, 2050, 480) >= 0.24,
+                "Page 1 background should keep the official title/subtitle block under the logos"
+        );
+        assertTrue(
+                darkPixelRatio(Path.of("../assets/backgrounds/bg_page2.png"), 60, 730, 2420, 1900) >= 0.15,
+                "Page 2 background should keep the central academic block instead of leaving a blank middle section"
+        );
+    }
 
     @Test
     void academicChoiceFieldsRefreshOnCommitWithReentryGuard() throws Exception {
@@ -302,6 +316,28 @@ class GenerateMatriculaPdfTest {
         assertNotNull(upper);
         assertNotNull(lower);
         return upper.getRectangle().getLowerLeftY() - lower.getRectangle().getUpperRightY();
+    }
+
+    private static double darkPixelRatio(Path path, int x0, int y0, int x1, int y1) throws IOException {
+        BufferedImage image = ImageIO.read(path.toFile());
+        assertNotNull(image, () -> "Could not read image " + path);
+
+        int darkPixels = 0;
+        int totalPixels = 0;
+        for (int y = y0; y < y1; y++) {
+            for (int x = x0; x < x1; x++) {
+                int rgb = image.getRGB(x, y);
+                int r = (rgb >> 16) & 0xff;
+                int g = (rgb >> 8) & 0xff;
+                int b = rgb & 0xff;
+                if (r < 240 || g < 240 || b < 240) {
+                    darkPixels++;
+                }
+                totalPixels++;
+            }
+        }
+
+        return totalPixels == 0 ? 0.0 : (double) darkPixels / totalPixels;
     }
 
     private static boolean isAllowedDynamicOverlap(String leftName, String rightName) {
