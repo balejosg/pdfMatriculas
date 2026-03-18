@@ -221,19 +221,19 @@ public class GenerateMatriculaPdf {
             }
 
             // UI mode bar and shared metadata fields (no-print, visible in edit mode).
-            addLabel(form, page2, "uiModeLabel", rect(22, 684, 170, 12), 10);
-            addText(form, page2, "txtLugar", rect(198, 684, 132, 12), 9, false, true);
-            addText(form, page2, "txtFecha", rect(336, 684, 60, 12), 9, false, true);
-            addButton(form, page2, "btnValidate", rect(404, 682, 78, 16), "Validar", false);
-            addButton(form, page2, "btnTogglePreview", rect(488, 682, 88, 16), "Vista previa", false);
+            addLabel(form, page2, "uiModeLabel", rect(22, 656, 150, 12), 10);
+            addText(form, page2, "txtLugar", rect(178, 656, 126, 12), 9, false, true);
+            addText(form, page2, "txtFecha", rect(310, 656, 80, 12), 9, false, true);
+            addButton(form, page2, "btnValidate", rect(398, 654, 84, 16), "Validar", false);
+            addButton(form, page2, "btnTogglePreview", rect(488, 654, 88, 16), "Vista previa", false);
 
             // Principal academic section.
             float mainLabelX = 22;
             float mainFieldX = 112;
             float selectorLabelW = 84;
             float selectorFieldW = 186;
-            float selectorRowH = 14;
-            float mainSelectorY = 666;
+            float selectorRowH = 12;
+            float mainSelectorY = 640;
             addLabel(form, page2, "lblEstudios", rect(mainLabelX, mainSelectorY, selectorLabelW, 12), 9);
             addCombo(form, page2, "txtEstudios", rect(mainFieldX, mainSelectorY, selectorFieldW, 12), 9, false, true);
             addLabel(form, page2, "lblEsoCurso", rect(mainLabelX, mainSelectorY - selectorRowH, selectorLabelW, 12), 9);
@@ -258,8 +258,9 @@ public class GenerateMatriculaPdf {
             float mainFreeLabelX = 314;
             float mainFreeFieldX = 340;
             float freeFieldW = 236;
+            float mainFreeTopY = 624;
             for (int i = 1; i <= 10; i++) {
-                float freeY = mainSelectorY - (i - 1) * selectorRowH;
+                float freeY = mainFreeTopY - (i - 1) * selectorRowH;
                 addLabel(form, page2, "lblLibre" + i, rect(mainFreeLabelX, freeY, 22, 12), 9);
                 addText(form, page2, "txtOptLibre_" + i, rect(mainFreeFieldX, freeY, freeFieldW, 12), 9, false, true);
             }
@@ -268,8 +269,8 @@ public class GenerateMatriculaPdf {
             float[] mainGridLabelX = new float[]{22, 205, 388};
             float[] mainGridFieldX = new float[]{45, 228, 411};
             float gridFieldW = 160;
-            float gridRowH = 14;
-            float mainGridY = 522;
+            float gridRowH = 12;
+            float mainGridY = 510;
             addLabel(form, page2, "lblTr1", rect(mainGridLabelX[0], mainGridY, 20, 12), 9);
             addCombo(form, page2, "optTroncal_1", rect(mainGridFieldX[0], mainGridY, gridFieldW, 12), 9, false, true);
             addLabel(form, page2, "lblTr2", rect(mainGridLabelX[1], mainGridY, 20, 12), 9);
@@ -312,8 +313,9 @@ public class GenerateMatriculaPdf {
             addLabel(form, page2, "child_lblMatriculaCompleta", rect(mainLabelX, childSelectorY - 8 * selectorRowH, selectorLabelW, 12), 9);
             addCombo(form, page2, "child_matriculaCompleta", rect(mainFieldX, childSelectorY - 8 * selectorRowH, 90, 12), 9, false, true);
 
+            float childFreeTopY = 288;
             for (int i = 1; i <= 10; i++) {
-                float freeY = childSelectorY - (i - 1) * selectorRowH;
+                float freeY = childFreeTopY - (i - 1) * selectorRowH;
                 addLabel(form, page2, "child_lblLibre" + i, rect(mainFreeLabelX, freeY, 22, 12), 9);
                 addText(form, page2, "child_txtOptLibre_" + i, rect(mainFreeFieldX, freeY, freeFieldW, 12), 9, false, true);
             }

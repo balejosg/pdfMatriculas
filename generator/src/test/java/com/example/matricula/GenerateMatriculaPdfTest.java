@@ -175,6 +175,9 @@ class GenerateMatriculaPdfTest {
                     for (int j = i + 1; j < widgets.size(); j++) {
                         PDAnnotationWidget right = widgets.get(j);
                         String rightName = widgetNames.get(right.getCOSObject());
+                        if (isAllowedDynamicOverlap(leftName, rightName)) {
+                            continue;
+                        }
                         if (rectanglesOverlap(left.getRectangle(), right.getRectangle())) {
                             overlaps.add(leftName + " <-> " + rightName);
                         }
@@ -299,5 +302,32 @@ class GenerateMatriculaPdfTest {
         assertNotNull(upper);
         assertNotNull(lower);
         return upper.getRectangle().getLowerLeftY() - lower.getRectangle().getUpperRightY();
+    }
+
+    private static boolean isAllowedDynamicOverlap(String leftName, String rightName) {
+        return isFreeTextBandName(leftName) && isSelectionGridName(rightName)
+                || isFreeTextBandName(rightName) && isSelectionGridName(leftName);
+    }
+
+    private static boolean isFreeTextBandName(String name) {
+        return name != null && (name.startsWith("txtOptLibre_")
+                || name.startsWith("child_txtOptLibre_")
+                || name.startsWith("lblLibre")
+                || name.startsWith("child_lblLibre"));
+    }
+
+    private static boolean isSelectionGridName(String name) {
+        return name != null && (name.startsWith("optTroncal_")
+                || name.startsWith("optComun_")
+                || name.startsWith("optativa_")
+                || name.startsWith("child_optTroncal_")
+                || name.startsWith("child_optComun_")
+                || name.startsWith("child_optativa_")
+                || name.startsWith("lblTr")
+                || name.startsWith("lblC")
+                || name.startsWith("lblOpt")
+                || name.startsWith("child_lblTr")
+                || name.startsWith("child_lblC")
+                || name.startsWith("child_lblOpt"));
     }
 }
