@@ -90,6 +90,7 @@ public class GenerateMatriculaPdf {
 
             drawBackground(doc, page1, args.bg1);
             drawBackground(doc, page2, args.bg2);
+            drawPage2AcademicScaffold(doc, page2);
 
             PDAcroForm form = new PDAcroForm(doc);
             form.setNeedAppearances(true);
@@ -100,10 +101,14 @@ public class GenerateMatriculaPdf {
             doc.getDocumentCatalog().setAcroForm(form);
 
             // --- Page 1: header dynamic fields ---
-            addText(form, page1, "printEstudio1", rect(100, 750, 380, 14), 11, true, false);
-            addText(form, page1, "printEstudio2", rect(100, 736, 380, 14), 10, true, false);
-            addText(form, page1, "numExpediente", rect(88, 722, 150, 12), 9, true, false);
-            addText(form, page1, "printCurso", rect(287, 722, 80, 12), 9, true, false);
+            PDTextField printEstudio1 = addText(form, page1, "printEstudio1", rect(100, 750, 380, 14), 11, true, false);
+            PDTextField printEstudio2 = addText(form, page1, "printEstudio2", rect(100, 736, 380, 14), 10, true, false);
+            PDTextField numExpediente = addText(form, page1, "numExpediente", rect(88, 722, 150, 12), 9, true, false);
+            PDTextField printCurso = addText(form, page1, "printCurso", rect(287, 722, 80, 12), 9, true, false);
+            printEstudio1.setReadOnly(true);
+            printEstudio2.setReadOnly(true);
+            numExpediente.setReadOnly(true);
+            printCurso.setReadOnly(true);
 
             // Privacy checkboxes (positions from FP template page 1 images).
             addCheck(form, page1, "leidoPolitica", rect(430.6f, 722.8f, 12, 12), true);
@@ -396,6 +401,73 @@ public class GenerateMatriculaPdf {
         return rect(r.getLowerLeftX() + ix, r.getLowerLeftY() + iy, r.getWidth() - 2 * ix, r.getHeight() - 2 * iy);
     }
 
+    private static void drawPage2AcademicScaffold(PDDocument doc, PDPage page) throws IOException {
+        try (PDPageContentStream cs = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
+            cs.setStrokingColor(0.53f, 0.78f, 0.88f);
+            cs.setNonStrokingColor(0.30f, 0.30f, 0.30f);
+            cs.setLineWidth(0.8f);
+
+            drawRuledBlock(cs, 16, 522, 282, 124, "SELECCION ACADEMICA", 10, 12);
+            drawRuledBlock(cs, 304, 522, 275, 124, "MATERIAS / OBSERVACIONES", 10, 12);
+
+            strokeRect(cs, 16, 432, 563, 84);
+            drawBandLabel(cs, 16, 500, 563, 16, "ASIGNATURAS ESPECIFICAS");
+            drawBandLabel(cs, 16, 484, 181, 16, "TRONCALES");
+            drawBandLabel(cs, 199, 484, 181, 16, "COMUNES");
+            drawBandLabel(cs, 382, 484, 197, 16, "OPTATIVAS");
+
+            float[] columnX = new float[]{16, 199, 382, 579};
+            for (float x : columnX) {
+                moveTo(cs, x, 432);
+                lineTo(cs, x, 500);
+            }
+            for (int row = 0; row < 5; row++) {
+                float y = 432 + row * 12;
+                moveTo(cs, 16, y);
+                lineTo(cs, 579, y);
+            }
+            cs.stroke();
+
+            drawBandLabel(cs, 16, 418, 563, 12, "SELECCION PARA IMPRESION Y FIRMAS");
+        }
+    }
+
+    private static void drawRuledBlock(PDPageContentStream cs, float x, float y, float w, float h, String title, int rows, float rowHeight) throws IOException {
+        strokeRect(cs, x, y, w, h);
+        drawBandLabel(cs, x, y + h - 16, w, 16, title);
+        for (int row = 1; row < rows; row++) {
+            float lineY = y + h - 16 - row * rowHeight;
+            if (lineY <= y) {
+                break;
+            }
+            moveTo(cs, x, lineY);
+            lineTo(cs, x + w, lineY);
+        }
+        cs.stroke();
+    }
+
+    private static void drawBandLabel(PDPageContentStream cs, float x, float y, float w, float h, String label) throws IOException {
+        strokeRect(cs, x, y, w, h);
+        cs.stroke();
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA_BOLD, 7f);
+        cs.newLineAtOffset(x + 4, y + 4);
+        cs.showText(label);
+        cs.endText();
+    }
+
+    private static void strokeRect(PDPageContentStream cs, float x, float y, float w, float h) throws IOException {
+        cs.addRect(x, y, w, h);
+    }
+
+    private static void moveTo(PDPageContentStream cs, float x, float y) throws IOException {
+        cs.moveTo(x, y);
+    }
+
+    private static void lineTo(PDPageContentStream cs, float x, float y) throws IOException {
+        cs.lineTo(x, y);
+    }
+
     private static void reorderPage2WidgetsForDefaultState(PDAcroForm form, PDPage page) throws IOException {
         Map<Object, String> fieldNamesByWidget = new HashMap<>();
         for (PDField field : form.getFieldTree()) {
@@ -475,7 +547,7 @@ public class GenerateMatriculaPdf {
         w.setRectangle(r);
         w.setPage(page);
         w.setPrinted(print);
-        w.setBorderStyle(borderThin());
+        w.setBorderStyle(borderNone());
         w.setParent(f);
         f.setWidgets(List.of(w));
         page.getAnnotations().add(w);
@@ -493,7 +565,7 @@ public class GenerateMatriculaPdf {
         w.setRectangle(r);
         w.setPage(page);
         w.setPrinted(print);
-        w.setBorderStyle(borderThin());
+        w.setBorderStyle(borderNone());
         w.setParent(f);
         f.setWidgets(List.of(w));
         page.getAnnotations().add(w);
@@ -879,6 +951,7 @@ public class GenerateMatriculaPdf {
         sb.append("function initMatricula(){\n");
         sb.append("  var prevSuspend = __suspendCascade; __suspendCascade = true;\n");
         sb.append("  try{\n");
+        sb.append("  try{ app.runtimeHighlight = false; }catch(e){}\n");
         sb.append("  setPreview.call(this,false); setUiMode.call(this,'main');\n");
         sb.append("  setupCombos.call(this);\n");
         sb.append("  var b=f.call(this,'btnTogglePreview'); if(b){ try{ b.buttonSetCaption('Vista previa'); }catch(e){} }\n");
