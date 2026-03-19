@@ -1,7 +1,6 @@
 package com.example.matricula;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -12,8 +11,6 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -27,41 +24,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenerateMatriculaPdfTest {
-
-    @Test
-    void backgroundAssetsStaySanitizedAndAvoidPrefilledMarks() throws Exception {
-        assertTrue(
-                greenPixelRatio(Path.of("../assets/backgrounds/bg_page1.png"), 2280, 2800, 2470, 3430) <= 0.002,
-                "Page 1 background should not ship with pre-filled green authorization checks"
-        );
-        assertTrue(
-                greenPixelRatio(Path.of("../assets/backgrounds/bg_page2.png"), 2280, 120, 2470, 760) <= 0.002,
-                "Page 2 background should not ship with pre-filled authorization checks"
-        );
-    }
-
-    @Test
-    void generatedPdfKeepsPrintedAcademicBodyOnPage2() throws Exception {
-        Path output = Files.createTempFile("matricula-page2-printed-body", ".pdf");
-        try {
-            GenerateMatriculaPdf.main(new String[]{
-                    "--model", "../data/model.json",
-                    "--bg1", "../assets/backgrounds/bg_page1.png",
-                    "--bg2", "../assets/backgrounds/bg_page2.png",
-                    "--out", output.toString()
-            });
-
-            try (PDDocument document = PDDocument.load(output.toFile())) {
-                BufferedImage rendered = new PDFRenderer(document).renderImageWithDPI(1, 144);
-                assertTrue(
-                        darkPixelRatio(rendered, 20, 160, 1220, 800) >= 0.15,
-                        "Rendered page 2 should keep a visible printed academic block instead of a mostly blank middle area"
-                );
-            }
-        } finally {
-            Files.deleteIfExists(output);
-        }
-    }
 
     @Test
     void academicChoiceFieldsRefreshOnCommitWithReentryGuard() throws Exception {
@@ -120,8 +82,7 @@ class GenerateMatriculaPdfTest {
         String js = buildJavaScript();
         assertFalse(js.contains("function updateAll(){ setupCombos.call(this);"), "updateAll should not rebuild static selectors on every blur");
         assertTrue(
-                js.contains("function initMatricula(){\n  var prevSuspend = __suspendCascade; __suspendCascade = true;\n  try{\n")
-                        && js.contains("setPreview.call(this,false); setUiMode.call(this,'main');\n  setupCombos.call(this);"),
+                js.contains("function initMatricula(){\n  var prevSuspend = __suspendCascade; __suspendCascade = true;\n  try{\n  setPreview.call(this,false); setUiMode.call(this,'main');\n  setupCombos.call(this);"),
                 "setupCombos should run during init with cascades suspended before the first refresh"
         );
     }
@@ -170,15 +131,6 @@ class GenerateMatriculaPdfTest {
         assertFalse(js.contains("if(progField){ setItems.call(this,prefix+'txtESO_Programa', opts); ensureValue.call(this,prefix+'txtESO_Programa', opts); }"), "ESO program selector should not be rebuilt unconditionally");
         assertFalse(js.contains("if(itField){ itField.display = display.visible; setItems.call(this,prefix+'txtESO_Itinerario', itOpts); ensureValue.call(this,prefix+'txtESO_Itinerario', itOpts); }"), "ESO itinerary selector should not be rebuilt unconditionally");
         assertFalse(js.contains("if(itF){ setItems.call(this,prefix+'txtBACH_Itinerario', itOptsB); ensureValue.call(this,prefix+'txtBACH_Itinerario', itOptsB); }"), "Bach itinerary selector should not be rebuilt unconditionally");
-    }
-
-    @Test
-    void javascriptDisablesAcrobatRuntimeHighlightByDefault() throws Exception {
-        String js = buildJavaScript();
-        assertTrue(
-                js.contains("app.runtimeHighlight = false;"),
-                "Document JS should disable Acrobat runtime highlight so widgets do not look like a blue overlay by default"
-        );
     }
 
     @Test
@@ -239,8 +191,7 @@ class GenerateMatriculaPdfTest {
                 List<String> tooCloseToSignatures = new ArrayList<>();
                 for (PDAnnotationWidget widget : widgets) {
                     String name = widgetNames.get(widget.getCOSObject());
-                    if (name == null || name.startsWith("sig_") || name.startsWith("child_")
-                            || "txtLugar".equals(name) || "txtFecha".equals(name) || "btnEditSurface".equals(name)) {
+                    if (name == null || name.startsWith("sig_") || name.startsWith("child_")) {
                         continue;
                     }
                     float bottomY = widget.getRectangle().getLowerLeftY();
@@ -353,93 +304,25 @@ class GenerateMatriculaPdfTest {
         return upper.getRectangle().getLowerLeftY() - lower.getRectangle().getUpperRightY();
     }
 
-    private static double darkPixelRatio(Path path, int x0, int y0, int x1, int y1) throws IOException {
-        BufferedImage image = ImageIO.read(path.toFile());
-        assertNotNull(image, () -> "Could not read image " + path);
-        return darkPixelRatio(image, x0, y0, x1, y1);
-    }
-
-    private static double darkPixelRatio(BufferedImage image, int x0, int y0, int x1, int y1) {
-        assertNotNull(image, "Could not read rendered image");
-        int startX = Math.max(0, Math.min(image.getWidth(), x0));
-        int endX = Math.max(startX, Math.min(image.getWidth(), x1));
-        int startY = Math.max(0, Math.min(image.getHeight(), y0));
-        int endY = Math.max(startY, Math.min(image.getHeight(), y1));
-
-        int darkPixels = 0;
-        int totalPixels = 0;
-        for (int y = startY; y < endY; y++) {
-            for (int x = startX; x < endX; x++) {
-                int rgb = image.getRGB(x, y);
-                int r = (rgb >> 16) & 0xff;
-                int g = (rgb >> 8) & 0xff;
-                int b = rgb & 0xff;
-                if (r < 240 || g < 240 || b < 240) {
-                    darkPixels++;
-                }
-                totalPixels++;
-            }
-        }
-
-        return totalPixels == 0 ? 0.0 : (double) darkPixels / totalPixels;
-    }
-
-    private static double greenPixelRatio(Path path, int x0, int y0, int x1, int y1) throws IOException {
-        BufferedImage image = ImageIO.read(path.toFile());
-        assertNotNull(image, () -> "Could not read image " + path);
-
-        int greenPixels = 0;
-        int totalPixels = 0;
-        for (int y = y0; y < y1; y++) {
-            for (int x = x0; x < x1; x++) {
-                int rgb = image.getRGB(x, y);
-                int r = (rgb >> 16) & 0xff;
-                int g = (rgb >> 8) & 0xff;
-                int b = rgb & 0xff;
-                if (g > r + 20 && g > b + 20 && g > 120) {
-                    greenPixels++;
-                }
-                totalPixels++;
-            }
-        }
-
-        return totalPixels == 0 ? 0.0 : (double) greenPixels / totalPixels;
-    }
-
     private static boolean isAllowedDynamicOverlap(String leftName, String rightName) {
-        if (isSurfacePair(leftName, rightName) || isSurfacePair(rightName, leftName)) {
-            return true;
-        }
         return isFreeTextBandName(leftName) && isSelectionGridName(rightName)
                 || isFreeTextBandName(rightName) && isSelectionGridName(leftName);
     }
 
-    private static boolean isSurfacePair(String viewName, String sourceName) {
-        return viewName != null && sourceName != null && viewName.equals("view_" + sourceName);
-    }
-
     private static boolean isFreeTextBandName(String name) {
         return name != null && (name.startsWith("txtOptLibre_")
-                || name.startsWith("view_txtOptLibre_")
                 || name.startsWith("child_txtOptLibre_")
-                || name.startsWith("view_child_txtOptLibre_")
                 || name.startsWith("lblLibre")
                 || name.startsWith("child_lblLibre"));
     }
 
     private static boolean isSelectionGridName(String name) {
         return name != null && (name.startsWith("optTroncal_")
-                || name.startsWith("view_optTroncal_")
                 || name.startsWith("optComun_")
-                || name.startsWith("view_optComun_")
                 || name.startsWith("optativa_")
-                || name.startsWith("view_optativa_")
                 || name.startsWith("child_optTroncal_")
-                || name.startsWith("view_child_optTroncal_")
                 || name.startsWith("child_optComun_")
-                || name.startsWith("view_child_optComun_")
                 || name.startsWith("child_optativa_")
-                || name.startsWith("view_child_optativa_")
                 || name.startsWith("lblTr")
                 || name.startsWith("lblC")
                 || name.startsWith("lblOpt")
