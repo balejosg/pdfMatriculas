@@ -239,7 +239,8 @@ class GenerateMatriculaPdfTest {
                 List<String> tooCloseToSignatures = new ArrayList<>();
                 for (PDAnnotationWidget widget : widgets) {
                     String name = widgetNames.get(widget.getCOSObject());
-                    if (name == null || name.startsWith("sig_") || name.startsWith("child_")) {
+                    if (name == null || name.startsWith("sig_") || name.startsWith("child_")
+                            || "txtLugar".equals(name) || "txtFecha".equals(name) || "btnEditSurface".equals(name)) {
                         continue;
                     }
                     float bottomY = widget.getRectangle().getLowerLeftY();
@@ -406,24 +407,39 @@ class GenerateMatriculaPdfTest {
     }
 
     private static boolean isAllowedDynamicOverlap(String leftName, String rightName) {
+        if (isSurfacePair(leftName, rightName) || isSurfacePair(rightName, leftName)) {
+            return true;
+        }
         return isFreeTextBandName(leftName) && isSelectionGridName(rightName)
                 || isFreeTextBandName(rightName) && isSelectionGridName(leftName);
     }
 
+    private static boolean isSurfacePair(String viewName, String sourceName) {
+        return viewName != null && sourceName != null && viewName.equals("view_" + sourceName);
+    }
+
     private static boolean isFreeTextBandName(String name) {
         return name != null && (name.startsWith("txtOptLibre_")
+                || name.startsWith("view_txtOptLibre_")
                 || name.startsWith("child_txtOptLibre_")
+                || name.startsWith("view_child_txtOptLibre_")
                 || name.startsWith("lblLibre")
                 || name.startsWith("child_lblLibre"));
     }
 
     private static boolean isSelectionGridName(String name) {
         return name != null && (name.startsWith("optTroncal_")
+                || name.startsWith("view_optTroncal_")
                 || name.startsWith("optComun_")
+                || name.startsWith("view_optComun_")
                 || name.startsWith("optativa_")
+                || name.startsWith("view_optativa_")
                 || name.startsWith("child_optTroncal_")
+                || name.startsWith("view_child_optTroncal_")
                 || name.startsWith("child_optComun_")
+                || name.startsWith("view_child_optComun_")
                 || name.startsWith("child_optativa_")
+                || name.startsWith("view_child_optativa_")
                 || name.startsWith("lblTr")
                 || name.startsWith("lblC")
                 || name.startsWith("lblOpt")
